@@ -6,7 +6,7 @@ This repository is a collection of as simple as possible CMake projects (with a 
 
 This is basically intended as a series of reminders to help me remember how to use CMake 🤦
 
-Please see the [Example README](examples/README.md) for steps on using the example libraries and the [Installing README](installing/README.md) for an overview of installing CMake libraries.
+Please see the [Core Example README](examples/core/README.md) for steps on using the example libraries and the [Installing README](installing/README.md) for an overview of installing CMake libraries. The [More Example](examples/more/) section contains slightly more complex examples and will continue to grow.
 
 ## Disclaimer
 
@@ -22,7 +22,7 @@ The examples in this repo are the culmination of many months of sporadic researc
 
 I'm sharing my journey so far to hopefully help some other poor soul who is in the same boat I'm in. With any luck there will be something someone finds useful here.
 
-For an explanation<sup>2</sup> of _what_ (in the context of CMake) __installing__  is, please see the [installing](installing/README.md) section and take a look at the various [example](examples/) projects for context.
+For an explanation<sup>2</sup> of _what_ (in the context of CMake) __installing__  is, please see the [installing](installing/README.md) section and take a look at the various [example](examples/core) projects for context.
 
 1. I recently discovered a kindred spirit on [reddit](https://www.reddit.com/r/cpp/comments/6m7sp6/cmake_and_c_whats_the_deal_with_installing/)
 2. My interpretation?
@@ -101,7 +101,9 @@ Importing targets](https://archive.fosdem.org/2013/schedule/event/moderncmake/at
 * [install](https://cmake.org/cmake/help/latest/command/install.html)
 * [find_package](https://cmake.org/cmake/help/latest/command/find_package.html)
 * [target_include_directories](https://cmake.org/cmake/help/latest/command/target_include_directories.html)
+* [project](https://cmake.org/cmake/help/latest/command/project.html)
 * [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html)
+* [CMakePackageConfigHelpers](https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html)
 * [CMAKE_PREFIX_PATH](https://cmake.org/cmake/help/latest/variable/CMAKE_PREFIX_PATH.html#variable:CMAKE_PREFIX_PATH)
 * [CMAKE_INSTALL_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html)
 * [CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html)
