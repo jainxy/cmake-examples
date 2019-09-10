@@ -6,7 +6,7 @@ This repository is a collection of as simple as possible CMake projects (with a 
 
 This is basically intended as a series of reminders to help me remember how to use CMake 🤦
 
-Please see the [Example README](examples/README.md) for steps on using the example libraries and the [Installing README](installing/README.md) for an overview of installing CMake libraries.
+Please see the [Core Example README](examples/core/README.md) for steps on using the example libraries and the [Installing README](installing/README.md) for an overview of installing CMake libraries. The [More Example](examples/more/) section contains slightly more complex examples and will continue to grow.
 
 ## Disclaimer
 
@@ -22,10 +22,78 @@ The examples in this repo are the culmination of many months of sporadic researc
 
 I'm sharing my journey so far to hopefully help some other poor soul who is in the same boat I'm in. With any luck there will be something someone finds useful here.
 
-For an explanation<sup>2</sup> of _what_ (in the context of CMake) __installing__  is, please see the [installing](installing/README.md) section and take a look at the various [example](examples/) projects for context.
+For an explanation<sup>2</sup> of _what_ (in the context of CMake) __installing__  is, please see the [installing](installing/README.md) section and take a look at the various [example](examples/core) projects for context.
 
 1. I recently discovered a kindred spirit on [reddit](https://www.reddit.com/r/cpp/comments/6m7sp6/cmake_and_c_whats_the_deal_with_installing/)
 2. My interpretation?
+
+## Miscellaneous
+
+While using CMake over the last several months I've stumbled across a few useful little bits and bobs that I feel are worth recording/sharing.
+
+### Less `cd`-ing
+
+To run CMake from your source directory (instead of having to `mkdir build && cd build`) you can pass `-S` and the path to your source folder (most likely just `.` for where you currently are) and `-B` to specify the build folder.
+
+```bash
+cd <project/root>
+cmake -S . -B build/
+```
+
+You then just need to remember to call
+
+```bash
+cmake --build build/
+```
+
+to actually build your project.
+
+> Note: The `-S` option was added to CMake in version `3.13`. Before then you could use the undocumented `-H` option. I'd recommend sticking with `-S` now if you can 🙂.
+
+### compile_commands.json
+
+You should absolutely use `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` when generating your project to have CMake create a `compile_commands.json` file for you. This is useful for all sorts of tools (`clang-tidy`, `cppcheck`, `oclint`, `include-what-you-use` etc etc...)
+
+```bash
+# from the build/ folder
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+```
+
+### Defines
+
+Sometimes it's really useful to be able to set defines at the command line when running the CMake generator. An easy way to do this is to add a simple generator expression to your `CMakeLists.txt` file in `target_compile_definitions`.
+
+```bash
+target_compile_definitions(
+    ${PROJECT_NAME} PRIVATE
+    $<$<BOOL:${YOUR_DEFINE}>:YOUR_DEFINE>)
+```
+
+In your code you can then use this define for some sort of conditional compilation.
+
+```c++
+#ifdef YOUR_DEFINE
+// something useful
+#endif // YOUR_DEFINE
+```
+
+And when invoking `cmake` you can pass a CMake variable like so if you want that macro to be defined.
+
+```bash
+# from the build/ folder
+cmake -DYOUR_DEFINE ..
+```
+
+If you don't pass the variable then the generator expression will evaluate to false and no define will be added.
+
+### Extra Output
+
+Sometimes when building with CMake to diagnose an issue you might want more info about exactly what's being compiled. You can see everything that's passed to the compiler when building with the `-- VERBOSE` flag.
+
+```bash
+# from the build/ folder
+cmake --build . -- VERBOSE=1
+```
 
 ## CMake Resources
 
@@ -91,6 +159,12 @@ Importing targets](https://archive.fosdem.org/2013/schedule/event/moderncmake/at
   * [Effective CMake](https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf)
 * kde
   * [How to get CMake find what you want it to](https://blogs.kde.org/2008/12/12/how-get-cmake-find-what-you-want-it)
+* Schneide Blog - Marius Elvert
+  * [Modern CMake with target_link_libraries](https://schneide.blog/2016/04/08/modern-cmake-with-target_link_libraries/)
+* Jeff Preshing
+  * [Learn CMake's Scripting Language in 15 Minutes](https://preshing.com/20170522/learn-cmakes-scripting-language-in-15-minutes/)
+* Sam Thursfield
+  * [CMake: dependencies between targets and files and custom commands](https://samthursfield.wordpress.com/2015/11/21/cmake-dependencies-between-targets-and-files-and-custom-commands/)
 
 ### Documentation
 
@@ -101,7 +175,13 @@ Importing targets](https://archive.fosdem.org/2013/schedule/event/moderncmake/at
 * [install](https://cmake.org/cmake/help/latest/command/install.html)
 * [find_package](https://cmake.org/cmake/help/latest/command/find_package.html)
 * [target_include_directories](https://cmake.org/cmake/help/latest/command/target_include_directories.html)
+* [target_compile_definitions](https://cmake.org/cmake/help/latest/command/target_compile_definitions.html)
+* [project](https://cmake.org/cmake/help/latest/command/project.html)
+* [macro](https://cmake.org/cmake/help/latest/command/macro.html)
+* [function](https://cmake.org/cmake/help/latest/command/function.html)
+* [set](https://cmake.org/cmake/help/latest/command/set.html)
 * [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html)
+* [CMakePackageConfigHelpers](https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html)
 * [CMAKE_PREFIX_PATH](https://cmake.org/cmake/help/latest/variable/CMAKE_PREFIX_PATH.html#variable:CMAKE_PREFIX_PATH)
 * [CMAKE_INSTALL_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html)
 * [CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html)
@@ -124,6 +204,8 @@ Importing targets](https://archive.fosdem.org/2013/schedule/event/moderncmake/at
 * [Building of executable and shared library with cmake, runtimelinker does not find dll](https://stackoverflow.com/questions/23323741/building-of-executable-and-shared-library-with-cmake-runtimelinker-does-not-fin)
 * [https://stackoverflow.com/questions/28692896/how-to-use-cmake-generator-expression-target-filetgt](https://stackoverflow.com/questions/28692896/how-to-use-cmake-generator-expression-target-filetgt)
 * [A simple example of using cmake to build a Windows DLL](https://stackoverflow.com/questions/24872225/a-simple-example-of-using-cmake-to-build-a-windows-dll)
+* [CMake run custom command before build?](https://stackoverflow.com/questions/37862072/cmake-run-custom-command-before-build)
+* [How to change the build type to Release mode in cmake?](https://stackoverflow.com/questions/19024259/how-to-change-the-build-type-to-release-mode-in-cmake?rq=1)
 
 ### YouTube
 
